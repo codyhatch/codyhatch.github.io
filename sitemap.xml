@@ -1,27 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
-        <loc>http://chaos.net.nz/blog/2013/12/25/hello-world/</loc>
+        <loc>http://codyhatch.github.io/blog/2013/12/25/hello-world/</loc>
         <lastmod>2013-12-25T02:43:30+13:00</lastmod>
     </url>
     <url>
-        <loc>http://chaos.net.nz/blog/2013/12/25/testability/</loc>
+        <loc>http://codyhatch.github.io/blog/2013/12/25/testability/</loc>
         <lastmod>2013-12-25T02:48:34+13:00</lastmod>
     </url>
     <url>
-        <loc>http://chaos.net.nz/about-me.html</loc>
+        <loc>http://codyhatch.github.io/about-me.html</loc>
         <lastmod>2013-12-25T02:47:53+13:00</lastmod>
     </url>
     <url>
-        <loc>http://chaos.net.nz/blog/archives/</loc>
+        <loc>http://codyhatch.github.io/blog/archives/</loc>
         <lastmod>2013-12-25T02:48:34+13:00</lastmod>
     </url>
     <url>
-        <loc>http://chaos.net.nz/</loc>
+        <loc>http://codyhatch.github.io/</loc>
         <lastmod>2013-12-25T02:48:34+13:00</lastmod>
     </url>
     <url>
-        <loc>http://chaos.net.nz/robots.txt</loc>
+        <loc>http://codyhatch.github.io/robots.txt</loc>
         <lastmod>2013-12-25T02:43:30+13:00</lastmod>
     </url>
 </urlset>

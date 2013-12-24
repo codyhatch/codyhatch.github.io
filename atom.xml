@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Codyblog]]></title>
-  <link href="http://chaos.net.nz/atom.xml" rel="self"/>
-  <link href="http://chaos.net.nz/"/>
-  <updated>2013-12-25T02:49:10+13:00</updated>
-  <id>http://chaos.net.nz/</id>
+  <link href="http://codyhatch.github.io/atom.xml" rel="self"/>
+  <link href="http://codyhatch.github.io/"/>
+  <updated>2013-12-25T02:52:19+13:00</updated>
+  <id>http://codyhatch.github.io/</id>
   <author>
     <name><![CDATA[Cody Hatch]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Testability]]></title>
-    <link href="http://chaos.net.nz/blog/2013/12/25/testability/"/>
+    <link href="http://codyhatch.github.io/blog/2013/12/25/testability/"/>
     <updated>2013-12-25T02:48:19+13:00</updated>
-    <id>http://chaos.net.nz/blog/2013/12/25/testability</id>
+    <id>http://codyhatch.github.io/blog/2013/12/25/testability</id>
     <content type="html"><![CDATA[<p>The more time in software development, the more I come to understand the importance of testing.  Unit tests, functional tests, integration tests&hellip;the important thing is to <em>have some tests</em>.</p>
 
 <p>When I was younger and stupider (all of, oh, 2-3 years ago) the benefit of tests seemed more nebulous.  And stuff like <a href="http://en.wikipedia.org/wiki/Dependency_injection">DI</a>?  That&rsquo;s some crazy Java crap.  Ain&rsquo;t nobody got time for that stuff!</p>
@@ -117,9 +117,9 @@
   
   <entry>
     <title type="html"><![CDATA[Hello World]]></title>
-    <link href="http://chaos.net.nz/blog/2013/12/25/hello-world/"/>
+    <link href="http://codyhatch.github.io/blog/2013/12/25/hello-world/"/>
     <updated>2013-12-25T02:38:58+13:00</updated>
-    <id>http://chaos.net.nz/blog/2013/12/25/hello-world</id>
+    <id>http://codyhatch.github.io/blog/2013/12/25/hello-world</id>
     <content type="html"><![CDATA[<p>Let&rsquo;s try the blog thing again.</p>
 ]]></content>
   </entry>

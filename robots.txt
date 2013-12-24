@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://chaos.net.nz/sitemap.xml 
+Sitemap: http://codyhatch.github.io/sitemap.xml 
