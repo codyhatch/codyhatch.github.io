@@ -151,13 +151,13 @@
 
 <h3>Unit tests</h3>
 
-<p>This makes sense.  The server can be unit tested trivially, and knockout is based on the MVVM pattern.  Just require the app, and test some view models!</p>
+<p>This makes sense.  The server can be unit tested trivially, and Knockout is based on the MVVM pattern.  Just require the app, and test some view models!</p>
 
-<p><strong>Problem:</strong>  Over the months and now years, a few &ldquo;quick hacks&rdquo; have tangled the viewmodel code with the view code.  We have (just a few!) cases where viewmodel functios are referencing the window, or document globals directly, or using jQuery selectors.  This won&rsquo;t work in a headless unit test.</p>
+<p><strong>Problem:</strong>  Over the months and now years, a few &ldquo;quick hacks&rdquo; have tangled the viewmodel code with the view code.  We have (just a few!) cases where viewmodel functions are referencing the window, or document globals directly, or using jQuery selectors.  This won&rsquo;t work in a headless unit test.</p>
 
 <h3>Um, unit tests with JSDOM?</h3>
 
-<p>Doesn&rsquo;t implement enough.  The code relies on being in a webbrowser, and refactoring it now, especially without tests (funny how that works) will be a nightmare.</p>
+<p>Doesn&rsquo;t implement enough.  The code relies on being in a web browser, and refactoring it now, especially without tests (funny how that works) will be a nightmare.</p>
 
 <h3>Okay, ZombieJS!</h3>
 
@@ -195,7 +195,7 @@
 
 <p><strong><em>Testability matters</em></strong>.  Which is why you should be writing tests from day one; not because you need them then, but because one day you&rsquo;ll need them, and having tests guarantees that you can write tests.  I look at the search code now, and I wince, because it&rsquo;s so tightly coupled to, well, everything else, that it&rsquo;s largely untestable now.  But it didn&rsquo;t have to be that way.</p>
 
-<p>Also:  The Knockout docs say almost nothing about testing, and google for knockout + testing turns up very little.  Culture matters, and I think that one of the big advantages Angular may have over knockout is nothing technical; it&rsquo;s just the focus the Angular community puts on testing.</p>
+<p>Also:  The Knockout docs say almost nothing about testing, and google for Knockout + testing turns up very little.  Culture matters, and I think that one of the big advantages Angular may have over Knockout is nothing technical; it&rsquo;s just the focus the Angular community puts on testing.</p>
 
     </div>
   </div>
