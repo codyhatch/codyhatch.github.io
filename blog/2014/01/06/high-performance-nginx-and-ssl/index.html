@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>High performance Nginx and SSL - Codyblog</title>
+  <meta name="author" content="Cody Hatch">
+
+   
+  <meta name="description" content="A descript goes here.">
+  
+  <meta name="keywords" content="">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://codyhatch.github.io/blog/2014/01/06/high-performance-nginx-and-ssl">
+  <link href="/favicon.png" rel="icon">
+  <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Codyblog" type="application/atom+xml">
+  <script src="/js/jquery.js"></script>
+  <script src="/js/bootstrap-collapse.js"></script>
+  <script src="/js/modernizr-2.0.js"></script>
+  <script src="/js/octopress.js" type="text/javascript"></script>
+  <script src="/js/application.js"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <div class="navbar navbar-inverse navbar-static-top">
+  	<div class="navbar-inner">
+  	  <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+          <span class="fui-menu-24"></span>
+        </a>
+  	  	<div class="nav-collapse collapse navbar-responsive-collapse" style="height:0;">
+  	      <ul class="nav">
+    
+        <li ><a href="/index.html">Home</a></li>
+    
+        <li ><a href="/about-me.html">About Me</a></li>
+    
+</ul>
+
+<ul class="nav pull-right">
+    
+    <li><a href="http://github.com/codyhatch" title="Github Profile"><i class="icon-github-sign social-navbar"></i></a></li>
+    
+    
+    <li><a href="http://linkedin.com/in/dakotahatch" title="Linkedin Profile"><i class="icon-linkedin-sign social-navbar"></i></a></li>
+    
+    
+    <li><a href="http://twitter.com/Codayus" title="Twitter Profile"><i class="icon-twitter-sign social-navbar"></i></a></li>
+    
+    
+    <li><a href="http://plus.google.com/105886050713249834326" title="Google+ Profile"><i class="icon-google-plus-sign social-navbar"></i></a></li>
+    
+    
+    
+</ul>
+
+  	    </div>
+  	  </div>
+  	</div>
+  </div>
+  <div class="container" id="main">
+      <div class="row-fluid">
+        <div id="content">
+          <div>
+<article class="hentry" role="article">
+  
+
+  <header>
+  <div class="jumbotron">
+    High Performance Nginx and SSL
+	<h5>
+
+
+
+
+
+
+
+
+  
+
+
+<i class="icon-calendar-empty"></i> <time datetime="2014-01-06T17:51:19+13:00" pubdate data-updated="true">Jan 6<span>th</span>, 2014</time></h5>
+  </div>
+</header>
+  <div class="row-fluid">
+    <div class="span12">
+      <p>As we move towards launch, we&rsquo;re doing a lot of long delayed polish and testing.  Checking browser compatability, adding cacheing, integrating with a CDN, and generally making sure everything is working just right.  We&rsquo;re also doing some stress tests with the excellent <a href="http://blitz.io/">blitz.io</a> tool.</p>
+
+<h2>About that…</h2>
+
+<p>So, I queued up a basic blitz.io test (or a &ldquo;rush&rdquo;, in their terminology), and…</p>
+
+<div class='pagination-centered'><a href='/images/blog/whups.png'><img src="/images/blog/whups.png" width="350" height="350" title="whups" alt="whups"></a></div>
+
+
+<p>For those unfamiliar, the grey line shows increasing load, the blue line shows replies, the red line shows errors.  Or in simple terms, about the time I got 40 hits a second, everything fell over.</p>
+
+<p>On the surface, this is kind of surprising, since I&rsquo;m using Nginx, and serving up a static pre-rendered page.  Nginx is well known to be fast and really good at serving static content; most of the blog posts and StackOverflow comments about how to fix &ldquo;my site falls over when I stress test it&rdquo; boil down to &ldquo;use Nginx!&rdquo;.  But I&rsquo;m already using it, so…um.</p>
+
+<h2>A few tweaks</h2>
+
+<p>First off, I poked around a bit, and realised that I actually wasn&rsquo;t serving up the page directly from disk; a small config error meant I was actually hitting a node.js process which was serving up the static page directly from disk.  Node isn&rsquo;t quite as fast as Nginx, but it&rsquo;s quite fast enough; fixing my config didn&rsquo;t do anything.</p>
+
+<p>So then I started tweaking Nginx config variables.  <code>worker_processes</code> didn&rsquo;t seem to do much.  And neither did <code>worker_rlimit_nofile</code>, nor <code>open_file_cache</code>, or turning <code>access_log</code> to <code>off</code>, or well…anything.  My server froze up and cried little tears of pain every time I hit the test.</p>
+
+<h2>Progress</h2>
+
+<p>Well, okay.  So something is bottlenecked.  And it&rsquo;s not clear what exactly is bottlenecked either, so…hm.  Let&rsquo;s try running <code>top</code> on the server while we hit it with a test.</p>
+
+<p>Oh look, my CPU usage is 100%.  That certainly explains the results I&rsquo;m seeing, but Nginx is meant to be super low CPU when it comes to serving static files!  What&rsquo;s going on?</p>
+
+<p><span class='pullquote-right' data-pullquote='At this point, most of your are probably yelling at your monitors:&#8220;It says SSL in your title!  SSL termination is computationally expensive!  You&#8217;re a flaming idiot!&#8221;'>At this point, most of your are probably yelling at your monitors:&ldquo;It says SSL in your title!  SSL termination is computationally expensive!  You&rsquo;re a flaming idiot!&rdquo;</span></p>
+
+<p>Indeed.  It does, it is, and I might be.  Because once I realised what was going wrong I ran an rush on the non-SSL URL for our app.  And you can probably guess the results:</p>
+
+<div class="clearfix"></div>
+
+
+
+
+<div class='pagination-centered'><a href='/images/blog/hmm.png'><img src="/images/blog/hmm.png" width="350" height="350" title="hmm" alt="hmm"></a></div>
+
+
+<p>What you&rsquo;re seeing here is that the response time stayed pretty constant, while hits tracked overall volume closely.  In short, it responded (quickly!) to whatever I threw at it up to 250 hits/second which is as high as I decided to go.  Which is what Nginx is famed for, so uh…good.  (Not shown:  Our CPU usage, which was essentially nil.  No surprise; serving static files from RAM over plain-old-HTTP is practically free.)</p>
+
+<p>But now what?  I kind need SSL termination.</p>
+
+<h2>The fix</h2>
+
+<h3>Hardware</h3>
+
+<p>Step one is to look at the hardware I&rsquo;m throwing at the problem.  Which, as it turns out, is a $10/month Digital Ocean droplet.  For the price, they&rsquo;re not bad — 30GB of SSD disk, 1GB of RAM, and 1 vCPU.  It&rsquo;s that last bit which is clearly killing us now though.</p>
+
+<p>Well, it&rsquo;s the work of a moment to resize our droplet to the next tier up with 2 vCPU.  Let&rsquo;s reset to vanilla Nginx settings and see what that does:</p>
+
+<div class='pagination-centered'><a href='/images/blog/better.png'><img src="/images/blog/better.png" width="350" height="350" title="better" alt="better"></a></div>
+
+
+<p>Well, that is technically better…kind of.  Okay, now with all those tuned <code>worker_processes</code> settings we copied off the internet?</p>
+
+<div class='pagination-centered'><a href='/images/blog/nope.png'><img src="/images/blog/nope.png" width="350" height="350" title="nope" alt="nope]"></a></div>
+
+
+<p>Well, it&rsquo;s certainly spiky looking.  But not what we&rsquo;re going for.</p>
+
+<h3>Software</h3>
+
+<p>Nginx is very configurable.  Maybe there are some specific SSL settings?  But of course there are!</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+</span><span class='line'>ssl_ciphers ECDHE-RSA-AES256-SHA384:AES256-SHA256:RC4:HIGH:!MD5:!aNULL:!eNULL:!NULL:!DH:!EDH:!AESGCM;
+</span><span class='line'>ssl_prefer_server_ciphers on;
+</span><span class='line'>ssl_session_cache shared:SSL:10m;
+</span><span class='line'>ssl_session_timeout 10m;</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<div class='pagination-centered'><a href='/images/blog/success.png'><img src="/images/blog/success.png" width="350" height="350" title="yes!" alt="yes!]"></a></div>
+
+
+<p>Well how about that?</p>
+
+<h2>The conclusion</h2>
+
+<p>Well, the obvious conclusion is &ldquo;know how to use your tools&rdquo;, but that&rsquo;s a bit too general.  Let&rsquo;s look for something a bit more specific.  Such as:</p>
+
+<p>Make sure to configure Nginx properly for SSL!</p>
+
+    </div>
+  </div>
+
+
+
+  <footer>
+    <hr>
+    
+    <div class="row-fluid">
+      
+      <div class="span6">
+        <p class="meta">
+        
+        
+
+
+        </p>
+      </div>
+      
+      <div class="span6 social-sharing">
+        <div class="sharing">
+  <div class="addthis_toolbox addthis_default_style ">
+  
+  
+  
+  <!-- <a class="addthis_counter addthis_pill_style"></a> -->
+  </div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+      </div>
+      
+      
+    </div>
+    
+    <div class="row-fluid">
+      <div class="span12">
+        <p class="meta">
+          
+            <a class="basic-alignment left" href="/blog/2013/12/25/testability/" title="Previous Post: Testability">&laquo; Testability</a>
+          
+          
+        </p>
+      </div>
+    </div>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+
+
+        </div>
+      </div>
+      <div class="row-fluid">
+        <footer class="footer-page" role="contentinfo">
+          <p>
+  Copyright &copy; 2014 - Cody Hatch -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
+</p>
+
+
+        </footer>
+      </div>
+  </div>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'codyblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://codyhatch.github.io/blog/2014/01/06/high-performance-nginx-and-ssl/';
+        var disqus_url = 'http://codyhatch.github.io/blog/2014/01/06/high-performance-nginx-and-ssl/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
